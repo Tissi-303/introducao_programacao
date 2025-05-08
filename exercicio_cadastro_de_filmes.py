@@ -1,8 +1,9 @@
 import time
+from loguru import logger
 
 bd_filmes = [
-    ['Matrix, 1997']
-    ['Vingadores, 2015']
+    ['Matrix', 1997],
+    ['Vingadores', 2015]
 ]
 
 def cadastra_filmes(bd, titulo, ano):
@@ -10,39 +11,63 @@ def cadastra_filmes(bd, titulo, ano):
     bd.append(filme)
     return bd
 
+#loguru <----- pip install loguru
+
 def lista_filmes(bd):
+    logger.info('\nListagem de filmes')
     for i in range(len(bd)):
-       print(f'{i+1} | {bd[i][1]} | {bd[i][0]}')
+        print(f'{i+1} | {bd[i][1]} | {bd[i][0]}')
 
 def altera_filme(bd, indice, titulo, ano):
     bd[indice][0] = titulo
     bd[indice][1] = ano
     return bd
-    
+
+def salvar_filmes(bd):
+
+    with open('bd_filmes.txt', 'w', encoding='utf-8') as arquivo:
+
+        for i in range(len(bd)):
+            arquivo.write(f'{bd[i][1]}, {bd[i][0]}\n')
+
 while True:
     print('1 - Cadastrar Filme')
     print('2 - Listar Filmes')
     print('3 - Alterar Filme')
-    op = int(input('Dgite sua opção: '))
+    print('4 - Salvar Filmes')
+
+    try:
+        op = int(input('Digite sua opção: '))
+    except Exception as e:
+        logger.error(f'Error: {e}')
+        logger.info('Digite um valor numérico!')
+        op = -1
 
     if op == 1:
+        logger.info('Iniciando o cadastro de filme.')
+
         titulo = input('Digite o título do filme: ')
-        ano = input('Digite o ano do filme: ')
+        ano = int(input('Digite o ano do filme: '))
 
         bd_filmes = cadastra_filmes(
             bd=bd_filmes,
             titulo=titulo,
             ano=ano
         )
-        print('Filme cadastrado!')
+
+        logger.info('Filme cadastrado com sucesso')
 
     elif op == 2:
-        print('Filmes listados!')
-    
+        logger.info('Iniciando lisyagem de filmes')
+        lista_filmes(bd_filmes)
+        logger.info('Filmes listados com sucesso!')
+
+
     elif op == 3:
+        logger.info('iniciando alteração de filme')
         lista_filmes(bd_filmes)
         i = int(input('Qual filme deseja alterar? '))
-        titulo = input('Digite  o novo título: ')
+        titulo = input('Digite o novo título: ')
         ano = int(input('Digite o novo ano: '))
         bd_filmes = altera_filme(
             bd=bd_filmes,
@@ -50,9 +75,14 @@ while True:
             titulo=titulo,
             ano=ano
         )
-        print('Filme alterado!')
+        logger.info('Filme alterado com sucesso!')
+
+    elif op == 4:
+        logger.info('Iniciando persistência dos filmes')
+        salvar_filmes(bd_filmes)
+        logger.info('Filmes salvos com sucesso!')
 
     else:
-        print(f'Opção {op} invalida!')
-    
+        print(f'Opção {op} inválida!')
+
     time.sleep(3)
